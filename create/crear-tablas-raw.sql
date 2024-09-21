@@ -8,7 +8,7 @@ CREATE TABLE raw_usuarios (
 CREATE TABLE raw_publicaciones (
     id_publicacion INT PRIMARY KEY,
     fecha_publicacion DATE,
-    precio_publicacion DECIMAL(10,2),
+    precio_publicacion DECIMAL(15,2),
     tipo_publicacion NVARCHAR(MAX), 
     barrio NVARCHAR(MAX),
     latitud DECIMAL(10,6),
@@ -20,7 +20,7 @@ CREATE TABLE raw_publicaciones (
 CREATE TABLE raw_pagos (
     id_pago INT PRIMARY KEY,
     fecha DATE,
-    monto DECIMAL(10,2),
+    monto DECIMAL(15,2),
     id_publicacion INT, 
     id_usuario INT,
     FOREIGN KEY (id_publicacion) REFERENCES raw_publicaciones(id_publicacion),
@@ -31,7 +31,7 @@ CREATE TABLE raw_mudanzas (
     id_mudanza INT PRIMARY KEY,
     fecha_solicitud DATE,
     fecha_realizacion DATE,
-    costo_mudanza DECIMAL(10,2),
+    costo_mudanza DECIMAL(15,2),
     barrio_origen NVARCHAR(MAX),
     barrio_destino NVARCHAR(MAX),
     latitud_origen DECIMAL(10,6),
@@ -45,8 +45,8 @@ CREATE TABLE raw_mudanzas (
 CREATE TABLE raw_financiamientos (
     id_financiamiento INT PRIMARY KEY,
     fecha_solicitud DATE,
-    monto_solicitado DECIMAL(10,2),
-    monto_aprobado DECIMAL(10,2),
+    monto_solicitado DECIMAL(15,2),
+    monto_aprobado DECIMAL(15,2),
     estado_solicitud NVARCHAR(MAX), 
     id_usuario INT,
     FOREIGN KEY (id_usuario) REFERENCES raw_usuarios(id_usuario)
@@ -60,7 +60,7 @@ CREATE TABLE raw_contratos (
     fecha_firma DATE,
     fecha_inicio DATE,
     fecha_fin DATE,
-    monto_renta DECIMAL(10,2),
+    monto_renta DECIMAL(15,2),
     estado_contrato NVARCHAR(MAX),
     FOREIGN KEY (id_publicacion) REFERENCES raw_publicaciones(id_publicacion),  
     FOREIGN KEY (id_usuario_locador) REFERENCES raw_usuarios(id_usuario),
