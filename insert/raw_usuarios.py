@@ -20,11 +20,11 @@ conn = conectar_db()
 cursor = conn.cursor()
 
 #Declaración de variables
-id = 1
+id = 301
 fecha_inicio = datetime(2023, 1, 1)
 fecha_fin = datetime.today()
 
-for _ in range(300):
+for _ in range(1000):
     id_usuario = id
     nombre = fake.name()
     tipo_usuario = random.choices(tipos_usuario, weights=probabilidades)[0]
