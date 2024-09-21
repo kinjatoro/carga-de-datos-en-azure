@@ -1,11 +1,10 @@
 CREATE TABLE avg_resumen_alquileres (
-    fecha DATE,
-    barrio NVARCHAR(MAX),
+    barrio NVARCHAR(255) PRIMARY KEY,
     total_alquileres INT,
-    renta_promedio DECIMAL(10,2),
-    ingreso_total DECIMAL(10,2),
-    renta_maxima DECIMAL(10,2),
-    renta_minima DECIMAL(10,2)
+    renta_promedio DECIMAL(15,2),
+    ingreso_total DECIMAL(15,2),
+    renta_maxima DECIMAL(15,2),
+    renta_minima DECIMAL(15,2)
 );
 
 CREATE TABLE avg_actividad_usuarios (
@@ -41,11 +40,11 @@ CREATE TABLE avg_costo_mudanza (
 );
 
 CREATE TABLE avg_costo_mudanza_por_barrio (
-    fecha DATE,
-    barrio NVARCHAR(MAX),
+    barrio NVARCHAR(255) PRIMARY KEY,
     costo_promedio_mudanza DECIMAL(10,2),
     mudanzas_realizadas INT
 );
+
 
 CREATE TABLE avg_financiamientos (
     fecha DATE,
