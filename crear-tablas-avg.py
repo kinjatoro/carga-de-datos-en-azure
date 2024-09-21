@@ -1,5 +1,5 @@
 import pyodbc
-from ..config import server, database, username, password, driver
+from config import server, database, username, password, driver
 
 # Función para establecer la conexión
 def conectar_db():
