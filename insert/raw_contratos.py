@@ -2,7 +2,7 @@ import pyodbc
 from faker import Faker
 import random
 from config import server, database, username, password, driver
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # Función para establecer la conexión con la base de datos
 def conectar_db():
@@ -18,14 +18,14 @@ conn = conectar_db()
 cursor = conn.cursor()
 
 # Declaración de variables
-id_contrato = 251
-fecha_inicio_rango = datetime(2023, 1, 1)
-fecha_fin_rango = datetime(2026, 12, 31)
+id_contrato = 1
+fecha_firma_inicio = datetime(2023, 1, 1).date()  # Asegurarse de que sea un objeto date
+fecha_firma_fin = datetime.today().date()         # Convertir a date
 
 # Posibles estados de contrato
 estados_contrato = ['Activo', 'Finalizado', 'Rescindido']
 
-# Generar datos para 250 contratos de alquiler
+# Generar datos para 750 contratos de alquiler
 for _ in range(750):
     # Selección aleatoria de id_publicacion entre las publicaciones de alquiler (de 1 a 750)
     id_publicacion = random.randint(1, 750)
@@ -37,17 +37,38 @@ for _ in range(750):
     while id_usuario_locador == id_usuario_locatario:
         id_usuario_locatario = random.randint(1, 1300)
 
-    # Fechas del contrato
-    fecha_firma = fake.date_between(start_date=fecha_inicio_rango, end_date=fecha_fin_rango)
-    fecha_inicio_contrato = fake.date_between(start_date=fecha_firma, end_date=fecha_firma)
-    fecha_fin_contrato = fake.date_between(start_date=fecha_inicio_contrato, end_date=fecha_fin_rango)
-
+    # Generar fecha de firma entre el 1 de enero de 2023 y hoy
+    fecha_firma = fake.date_between(start_date=fecha_firma_inicio, end_date=fecha_firma_fin)
+    
+    # Generar fecha de inicio entre 10 y 90 días después de la fecha de firma
+    delta_inicio = random.randint(10, 90)
+    fecha_inicio_contrato = fecha_firma + timedelta(days=delta_inicio)
+    
+    # Generar fecha de fin entre 6 meses y 3 años después de la fecha de inicio
+    delta_fin_min = timedelta(days=180)  # 6 meses
+    delta_fin_max = timedelta(days=1095) # 3 años
+    fecha_fin_contrato = fecha_inicio_contrato + timedelta(days=random.randint(delta_fin_min.days, delta_fin_max.days))
+    
     # Monto de la renta (entre 150,000 y 4,000,000)
     monto_renta = round(random.uniform(150000, 4000000), 2)
-
+    
     # Estado del contrato
     estado_contrato = random.choice(estados_contrato)
-
+    
+    # Si el contrato está finalizado, asegurar que fecha_fin < hoy
+    if estado_contrato == 'Finalizado':
+        # Si fecha_fin_contrato >= hoy, ajustarla para que sea antes de hoy
+        if fecha_fin_contrato >= datetime.today().date():
+            # Calcular el máximo delta posible
+            max_delta = (datetime.today().date() - fecha_inicio_contrato).days - 1
+            if max_delta < 180:  # Asegurar al menos 6 meses
+                # Si no es posible cumplir con las 6 meses, ajustar fecha_inicio_contrato
+                fecha_inicio_contrato = datetime.today().date() - timedelta(days=180 + random.randint(0, 90))
+                fecha_fin_contrato = fecha_inicio_contrato + timedelta(days=random.randint(180, 1095))
+            else:
+                # Asegurar que la fecha de fin no exceda el máximo permitido
+                fecha_fin_contrato = fecha_inicio_contrato + timedelta(days=random.randint(180, min(1095, max_delta)))
+    
     # Insertar en la base de datos
     cursor.execute("""
         INSERT INTO raw_contratos (

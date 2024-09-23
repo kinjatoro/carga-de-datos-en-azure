@@ -2,7 +2,7 @@ import pyodbc
 from faker import Faker
 import random
 from config import server, database, username, password, driver
-from datetime import datetime
+from datetime import datetime, timedelta  # Importa timedelta
 
 # Función para establecer la conexión con la base de datos
 def conectar_db():
@@ -38,16 +38,23 @@ def generar_coordenadas():
 conn = conectar_db()
 cursor = conn.cursor()
 
-#Declaración de variables
+# Declaración de variables
 id_mudanza = 1
-fecha_inicio = datetime(2023, 1, 1)
-fecha_fin = datetime.today()
+fecha_inicio = datetime(2023, 1, 1).date()  # Cambiar a `date()`
+fecha_fin = datetime.today().date()  # Cambiar a `date()`
 
-# Generar datos para 1000 mudanzas
+# Generar datos para 250 mudanzas
 for _ in range(250):
-    # Fechas
+    # Generar fecha de solicitud
     fecha_solicitud = fake.date_between(start_date=fecha_inicio, end_date=fecha_fin)
-    fecha_realizacion = fake.date_between(start_date=fecha_solicitud, end_date=fecha_fin)
+    
+    # Generar una diferencia aleatoria entre 5 y 40 días
+    delta_dias = random.randint(5, 40)
+    fecha_realizacion = fecha_solicitud + timedelta(days=delta_dias)
+    
+    # Asegurarse de que fecha_realizacion no exceda fecha_fin
+    if fecha_realizacion > fecha_fin:  # Cambiar comparación
+        fecha_realizacion = fecha_fin
     
     # Costo aleatorio de la mudanza
     costo_mudanza = round(random.uniform(80000, 500000), 2)

@@ -12,7 +12,7 @@ conn = conectar_db()
 cursor = conn.cursor()
 
 
-sql_commands = 'SELECT * FROM ...'
+sql_commands = 'SELECT * FROM raw_pagos'
 
 # Ejecutar todos los comandos
 cursor.execute(sql_commands)
