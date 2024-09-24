@@ -9,7 +9,6 @@ CREATE TABLE avg_resumen_alquileres (
     renta_minima DECIMAL(15,2)
 );
 
-
 ------------------------ MUDANZAS
 
 CREATE TABLE avg_costo_mudanza_por_barrio (
@@ -42,6 +41,50 @@ CREATE TABLE avg_mudanzas_por_barrio_combinacion (
     total_mudanzas INT,
     PRIMARY KEY (barrio_origen, barrio_destino)
 );
+
+------------------------ USUARIOS
+
+CREATE TABLE avg_usuarios_por_tipo (
+    tipo_usuario NVARCHAR(255) PRIMARY KEY,
+    total_usuarios INT
+);
+
+CREATE TABLE avg_usuarios_registrados_por_mes (
+    anio INT,
+    mes INT,
+    total_usuarios INT,
+    PRIMARY KEY (anio, mes)
+);
+
+------------------------ CONTRATOS
+
+CREATE TABLE avg_locadores_contratos (
+    id_usuario_locador INT PRIMARY KEY,
+    contratos_activos INT,
+    contratos_finalizados INT,
+    contratos_rescindidos INT,
+    FOREIGN KEY (id_usuario_locador) REFERENCES raw_usuarios(id_usuario)
+);
+
+CREATE TABLE avg_contratos_firmados_por_mes (
+    anio INT,
+    mes INT,
+    total_contratos INT,
+    PRIMARY KEY (anio, mes)
+);
+
+CREATE TABLE avg_locadores_contratos_activos (
+    id_usuario_locador INT PRIMARY KEY,
+    total_contratos_activos INT
+);
+
+CREATE TABLE avg_contratos_por_anio (
+    anio INT PRIMARY KEY,
+    total_activos INT,
+    total_finalizados INT,
+    total_rescindidos INT
+);
+
 
 -------------------------------------
 
@@ -76,9 +119,6 @@ CREATE TABLE avg_costo_mudanza (
     costo_maximo_mudanza DECIMAL(10,2),
     costo_minimo_mudanza DECIMAL(10,2)
 );
-
-
-
 
 CREATE TABLE avg_financiamientos (
     fecha DATE,

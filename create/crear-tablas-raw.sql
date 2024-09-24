@@ -1,7 +1,7 @@
 CREATE TABLE raw_usuarios (
     id_usuario INT PRIMARY KEY,
     nombre NVARCHAR(MAX),
-    tipo_usuario NVARCHAR(MAX), -- Puede ser 'locador', 'locatario', 'empleado', 'mudanza', 'escribano'
+    tipo_usuario NVARCHAR(MAX), -- Puede ser 'locador', 'locatario', 'empleado', 'mudanza', 'abogado'
     fecha_registro DATE,
 );
 
@@ -61,7 +61,7 @@ CREATE TABLE raw_contratos (
     fecha_inicio DATE,
     fecha_fin DATE,
     monto_renta DECIMAL(15,2),
-    estado_contrato NVARCHAR(MAX),
+    estado_contrato NVARCHAR(MAX), ---- ['activo, 'finalizado', 'rescindido']
     FOREIGN KEY (id_publicacion) REFERENCES raw_publicaciones(id_publicacion),  
     FOREIGN KEY (id_usuario_locador) REFERENCES raw_usuarios(id_usuario),
     FOREIGN KEY (id_usuario_locatario) REFERENCES raw_usuarios(id_usuario)
