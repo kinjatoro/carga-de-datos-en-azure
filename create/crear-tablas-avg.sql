@@ -86,6 +86,24 @@ CREATE TABLE avg_contratos_por_anio (
 );
 
 
+------------------------ FINANCIAMIENTO
+
+CREATE TABLE avg_financiamientos_estado (
+    estado_solicitud NVARCHAR(255) PRIMARY KEY,
+    cantidad INT
+);
+
+CREATE TABLE avg_financiamientos_por_mes (
+    anio INT,
+    mes INT,
+    cantidad_total INT,
+    cantidad_aprobados INT,
+    cantidad_pendientes INT,
+    cantidad_rechazados INT,
+    PRIMARY KEY (anio, mes)
+);
+
+
 -------------------------------------
 
 CREATE TABLE avg_actividad_usuarios (

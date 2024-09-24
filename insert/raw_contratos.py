@@ -37,6 +37,11 @@ for _ in range(750):
     while id_usuario_locador == id_usuario_locatario:
         id_usuario_locatario = random.randint(1, 1300)
 
+    # Generar id_usuario_abogado (asegurando que no sea el mismo que locador o locatario)
+    id_usuario_abogado = random.randint(1, 1300)
+    while id_usuario_abogado == id_usuario_locador or id_usuario_abogado == id_usuario_locatario:
+        id_usuario_abogado = random.randint(1, 1300)
+
     # Generar fecha de firma entre el 1 de enero de 2023 y hoy
     fecha_firma = fake.date_between(start_date=fecha_firma_inicio, end_date=fecha_firma_fin)
     
@@ -62,7 +67,7 @@ for _ in range(750):
             # Calcular el máximo delta posible
             max_delta = (datetime.today().date() - fecha_inicio_contrato).days - 1
             if max_delta < 180:  # Asegurar al menos 6 meses
-                # Si no es posible cumplir con las 6 meses, ajustar fecha_inicio_contrato
+                # Si no es posible cumplir con los 6 meses, ajustar fecha_inicio_contrato
                 fecha_inicio_contrato = datetime.today().date() - timedelta(days=180 + random.randint(0, 90))
                 fecha_fin_contrato = fecha_inicio_contrato + timedelta(days=random.randint(180, 1095))
             else:
@@ -72,12 +77,12 @@ for _ in range(750):
     # Insertar en la base de datos
     cursor.execute("""
         INSERT INTO raw_contratos (
-            id_contrato, id_publicacion, id_usuario_locador, id_usuario_locatario, 
+            id_contrato, id_publicacion, id_usuario_locador, id_usuario_locatario, id_usuario_abogado, 
             fecha_firma, fecha_inicio, fecha_fin, monto_renta, estado_contrato
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, 
-    id_contrato, id_publicacion, id_usuario_locador, id_usuario_locatario, 
+    id_contrato, id_publicacion, id_usuario_locador, id_usuario_locatario, id_usuario_abogado,
     fecha_firma, fecha_inicio_contrato, fecha_fin_contrato, monto_renta, estado_contrato)
 
     id_contrato += 1

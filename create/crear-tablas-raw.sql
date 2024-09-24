@@ -47,7 +47,7 @@ CREATE TABLE raw_financiamientos (
     fecha_solicitud DATE,
     monto_solicitado DECIMAL(15,2),
     monto_aprobado DECIMAL(15,2),
-    estado_solicitud NVARCHAR(MAX), 
+    estado_solicitud NVARCHAR(MAX), ---- ['aprobado', 'pendiente', 'rechazado']
     id_usuario INT,
     FOREIGN KEY (id_usuario) REFERENCES raw_usuarios(id_usuario)
 );
@@ -57,12 +57,14 @@ CREATE TABLE raw_contratos (
     id_publicacion INT, 
     id_usuario_locador INT,
     id_usuario_locatario INT,
+    id_usuario_abogado INT, -- Nuevo campo para el abogado
     fecha_firma DATE,
     fecha_inicio DATE,
     fecha_fin DATE,
     monto_renta DECIMAL(15,2),
-    estado_contrato NVARCHAR(MAX), ---- ['activo, 'finalizado', 'rescindido']
+    estado_contrato NVARCHAR(MAX), -- ['activo, 'finalizado', 'rescindido']
     FOREIGN KEY (id_publicacion) REFERENCES raw_publicaciones(id_publicacion),  
     FOREIGN KEY (id_usuario_locador) REFERENCES raw_usuarios(id_usuario),
-    FOREIGN KEY (id_usuario_locatario) REFERENCES raw_usuarios(id_usuario)
+    FOREIGN KEY (id_usuario_locatario) REFERENCES raw_usuarios(id_usuario),
+    FOREIGN KEY (id_usuario_abogado) REFERENCES raw_usuarios(id_usuario) -- Clave foránea para el abogado
 );
