@@ -34,35 +34,36 @@ def generar_coordenadas():
     longitud = round(random.uniform(longitud_min, longitud_max), 6)
     return latitud, longitud
 
-# Tipos de publicación y probabilidades correspondientes
-tipos_publicacion = ['Venta', 'Alquiler', 'Alquiler temporal (por día)']
-probabilidades_publicacion = [30, 60, 10]  # Probabilidades para Venta (30%), Alquiler (60%), Alquiler temporal (10%)
+# Función para generar un precio sesgado hacia los valores más bajos
+def generar_precio_alquiler():
+    # Rango ajustado
+    precio_base = 150000
+    precio_max = 4000000
+    # Generamos un número aleatorio con más sesgo hacia los valores bajos
+    # random.random() ** 4 hace que el sesgo hacia valores bajos sea más pronunciado
+    factor = random.random() ** 4  
+    precio = round(precio_base + (precio_max - precio_base) * factor, 2)
+    return precio
 
 # Establecer la conexión
 conn = conectar_db()
 cursor = conn.cursor()
 
 # Declaración de variables
-id_publicacion = 251
+id_publicacion = 1
 fecha_inicio = datetime(2023, 1, 1)
 fecha_fin = datetime.today()
 
-# Generar datos para 250 publicaciones
-for _ in range(500):
+# Generar datos para 1500 publicaciones
+for _ in range(1500):
     # Fecha de publicación
     fecha_publicacion = fake.date_between(start_date=fecha_inicio, end_date=fecha_fin)
     
-    # Seleccionar el tipo de publicación aleatoriamente con las probabilidades
-    tipo_publicacion = random.choices(tipos_publicacion, weights=probabilidades_publicacion, k=1)[0]
+    # Tipo de publicación: será siempre 'Alquiler'
+    tipo_publicacion = 'Alquiler'
     
-    # Definir el precio en función del tipo de publicación
-    if tipo_publicacion == 'Venta':
-        # Ajustar el rango para que no exceda el máximo permitido por DECIMAL(10,2)
-        precio_publicacion = round(random.uniform(36000000, 99999999.99), 2)
-    elif tipo_publicacion == 'Alquiler':
-        precio_publicacion = round(random.uniform(150000, 4000000), 2)
-    else:  # 'Alquiler temporal (por día)'
-        precio_publicacion = round(random.uniform(40000, 150000), 2)
+    # Generar precio con sesgo más fuerte hacia valores más bajos
+    precio_publicacion = generar_precio_alquiler()
 
     # Random randint para el id de usuario
     id_usuario = random.randint(1, 1300)

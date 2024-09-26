@@ -14,7 +14,7 @@ CREATE TABLE raw_publicaciones (
     latitud DECIMAL(10,6),
     longitud DECIMAL(10,6),
     id_usuario INT,
-    FOREIGN KEY (id_usuario) REFERENCES raw_usuarios(id_usuario)
+    FOREIGN KEY (id_usuario) REFERENCES raw_usuarios(id_usuario) --- El usuario id es 1, 2, 3... y así.
 );
 
 CREATE TABLE raw_pagos (
