@@ -3,6 +3,8 @@ from faker import Faker
 import random
 from config import server, database, username, password, driver
 from datetime import datetime
+import requests
+import time
 
 # Función para establecer la conexión con la base de datos
 def conectar_db():
@@ -13,20 +15,11 @@ def conectar_db():
 # Inicializar Faker
 fake = Faker('es_AR')
 
-# Lista de barrios de CABA
-barrios_caba = [
-    'Palermo', 'Recoleta', 'Belgrano', 'Caballito', 'San Telmo', 'Villa Urquiza', 
-    'Villa Crespo', 'Almagro', 'Balvanera', 'Boedo', 'Colegiales', 'Nuñez', 'Retiro',
-    'Villa Devoto', 'Villa Lugano', 'Villa Pueyrredón', 'Villa del Parque', 'Barracas',
-    'La Boca', 'Mataderos', 'Parque Chacabuco', 'Parque Patricios', 'Paternal',
-    'Puerto Madero', 'Saavedra', 'San Cristóbal', 'Villa Luro', 'Liniers', 'Flores', 'Floresta'
-]
-
-# Rango aproximado de coordenadas dentro de CABA
+# Rango aproximado de coordenadas dentro de CABA (ajustadas)
 latitud_min = -34.70
 latitud_max = -34.55
 longitud_min = -58.53
-longitud_max = -58.35
+longitud_max = -58.42  # Para no acercarse tanto al río
 
 # Función para generar coordenadas aleatorias dentro de CABA
 def generar_coordenadas():
@@ -34,56 +27,100 @@ def generar_coordenadas():
     longitud = round(random.uniform(longitud_min, longitud_max), 6)
     return latitud, longitud
 
-# Función para generar un precio sesgado hacia los valores más bajos
-def generar_precio_alquiler():
-    # Rango ajustado
-    precio_base = 150000
-    precio_max = 4000000
-    # Generamos un número aleatorio con más sesgo hacia los valores bajos
-    # random.random() ** 4 hace que el sesgo hacia valores bajos sea más pronunciado
-    factor = random.random() ** 4  
-    precio = round(precio_base + (precio_max - precio_base) * factor, 2)
-    return precio
+# Función para obtener dirección real usando Nominatim y extraer el barrio con reintentos y pausas
+def obtener_direccion_y_barrio(latitud, longitud, reintentos=3):
+    url = f'https://nominatim.openstreetmap.org/reverse?format=json&lat={latitud}&lon={longitud}&zoom=18&addressdetails=1'
+    
+    for _ in range(reintentos):
+        try:
+            response = requests.get(url)
+            if response.status_code == 200:
+                data = response.json()
+                direccion = data.get('display_name', 'Desconocida')
+                barrio = data['address'].get('suburb') or data['address'].get('neighbourhood') or 'Desconocido'
+                return direccion, barrio
+        except Exception as e:
+            print(f"Error: {e}, reintentando...")
+    return 'Desconocida', 'Desconocido'
+
+# Función para generar cantidad de habitaciones
+def generar_habitaciones():
+    prob = random.random()
+    if prob < 0.5:
+        return 1  # 50% de probabilidades de ser 1 ambiente
+    elif prob < 0.8:
+        return 2  # 30% para 2 ambientes
+    elif prob < 0.95:
+        return 3  # 15% para 3 ambientes
+    else:
+        return 4  # 5% para 4 o más ambientes
+
+# Función para generar superficie en m2 en función de la cantidad de habitaciones
+def generar_superficie(habitaciones):
+    if habitaciones == 1:
+        return random.randint(30, 50)  # 1 ambiente: 30-50 m²
+    elif habitaciones == 2:
+        return random.randint(50, 80)  # 2 ambientes: 50-80 m²
+    elif habitaciones == 3:
+        return random.randint(80, 120)  # 3 ambientes: 80-120 m²
+    else:
+        return random.randint(120, 200)  # 4+ ambientes: 120-200 m²
+
+# Función para generar un precio en función de los metros cuadrados
+def generar_precio(superficie):
+    precio_base_por_m2 = 6000  # Precio base por m²
+    variabilidad = random.uniform(-1000, 2000)  # Variación en el precio por m²
+    precio_por_m2 = precio_base_por_m2 + variabilidad
+    return round(precio_por_m2 * superficie, 2)
+
+# Función para generar el tipo de propiedad con condiciones de metros cuadrados
+def generar_tipo(superficie):
+    if superficie < 100:
+        return "Departamento"
+    else:
+        return "Departamento" if random.random() < 0.8 else "Casa"
+
+# Función para generar el estado de la publicación con 80% activas
+def generar_estado():
+    return 'Activo' if random.random() < 0.8 else 'Inactivo'
 
 # Establecer la conexión
 conn = conectar_db()
 cursor = conn.cursor()
 
 # Declaración de variables
-id_publicacion = 1
+id_publicacion = 202
 fecha_inicio = datetime(2023, 1, 1)
 fecha_fin = datetime.today()
 
-# Generar datos para 1500 publicaciones
-for _ in range(1500):
-    # Fecha de publicación
+# Generar datos para 100 publicaciones
+for _ in range(400):
     fecha_publicacion = fake.date_between(start_date=fecha_inicio, end_date=fecha_fin)
-    
-    # Tipo de publicación: será siempre 'Alquiler'
-    tipo_publicacion = 'Alquiler'
-    
-    # Generar precio con sesgo más fuerte hacia valores más bajos
-    precio_publicacion = generar_precio_alquiler()
-
-    # Random randint para el id de usuario
-    id_usuario = random.randint(1, 1300)
-
-    # Barrio y coordenadas
-    barrio = random.choice(barrios_caba)
     latitud, longitud = generar_coordenadas()
+    direccion, barrio = obtener_direccion_y_barrio(latitud, longitud)  # Obtener dirección con reintentos y pausa
+
+    habitaciones = generar_habitaciones()
+    superficie_total_m2 = generar_superficie(habitaciones)
+    precio_publicacion = generar_precio(superficie_total_m2)
+    tipo = generar_tipo(superficie_total_m2)
+    estado = generar_estado()
+    id_usuario = random.randint(1, 1300)
 
     # Insertar en la base de datos
     cursor.execute("""
         INSERT INTO raw_publicaciones (
-            id_publicacion, fecha_publicacion, precio_publicacion, tipo_publicacion, 
-            barrio, latitud, longitud, id_usuario
+            id_publicacion, fecha_publicacion, precio_publicacion, direccion, 
+            habitaciones, barrio, latitud, longitud, estado, id_usuario, 
+            tipo, superficie_total_m2
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, 
-    id_publicacion, fecha_publicacion, precio_publicacion, tipo_publicacion, 
-    barrio, latitud, longitud, id_usuario)
+    id_publicacion, fecha_publicacion, precio_publicacion, direccion, 
+    habitaciones, barrio, latitud, longitud, estado, id_usuario, 
+    tipo, superficie_total_m2)
     
     id_publicacion += 1
+    
 
 # Confirmar los cambios
 conn.commit()
