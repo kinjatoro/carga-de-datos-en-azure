@@ -72,3 +72,24 @@ CREATE TABLE raw_contratos (
     FOREIGN KEY (id_usuario_locatario) REFERENCES raw_usuarios(id_usuario),
     FOREIGN KEY (id_usuario_abogado) REFERENCES raw_usuarios(id_usuario) -- Clave foránea para el abogado
 );
+
+CREATE TABLE raw_contratos (
+    id_contrato INT PRIMARY KEY,
+    id_publicacion INT, 
+    id_usuario_locatario INT,
+    id_usuario_locador_o_mudanza INT,
+    id_usuario_escribano INT, -- Nuevo campo para el escribano (firma digital)
+    tipo_contrato NVARCHAR(50), -- ['Alquiler', 'Guardado muebles', 'Mudanza']
+    fecha_firma DATE,
+    fecha_inicio DATE,
+    fecha_fin DATE,
+    monto DECIMAL(15,2), -- Puede ser alquiler o monto del guardado de muebles
+    estado_contrato NVARCHAR(MAX), -- ['activo', 'finalizado', 'rescindido', 'rechazado', 'pendiente']
+    FOREIGN KEY (id_publicacion) REFERENCES raw_publicaciones(id_publicacion),  
+    FOREIGN KEY (id_usuario_locador) REFERENCES raw_usuarios(id_usuario),
+    FOREIGN KEY (id_usuario_locatario) REFERENCES raw_usuarios(id_usuario),
+    FOREIGN KEY (id_usuario_escribano) REFERENCES raw_usuarios(id_usuario), -- Clave foránea para el escribano
+    FOREIGN KEY (id_usuario_garante) REFERENCES raw_usuarios(id_usuario), -- Clave foránea para el garante
+    FOREIGN KEY (id_empresa_guardado) REFERENCES raw_empresas(id_empresa) -- Clave foránea para la empresa de guardado
+);
+
