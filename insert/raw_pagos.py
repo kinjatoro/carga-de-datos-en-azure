@@ -10,6 +10,16 @@ def conectar_db():
         f'DRIVER={driver};SERVER={server};PORT=1433;DATABASE={database};UID={username};PWD={password}'
     )
 
+# Función para verificar si el id de usuario existe
+def usuario_existe(cursor, id_usuario):
+    cursor.execute("SELECT COUNT(1) FROM raw_usuarios WHERE id_usuario = ?", id_usuario)
+    return cursor.fetchone()[0] > 0
+
+# Función para verificar si el id de publicación existe
+def publicacion_existe(cursor, id_publicacion):
+    cursor.execute("SELECT COUNT(1) FROM raw_publicaciones WHERE id_publicacion = ?", id_publicacion)
+    return cursor.fetchone()[0] > 0
+
 # Inicializar Faker
 fake = Faker('es_AR')
 
@@ -27,14 +37,18 @@ for _ in range(500):
     # Fecha del pago
     fecha_pago = fake.date_between(start_date=fecha_inicio, end_date=fecha_fin)
 
-    # Monto del pago (entre 100,000 y 15,000,000)
-    monto_pago = round(random.uniform(100000, 15000000), 2)
+    # Monto del pago (entre 100,000 y 1,500,000)
+    monto_pago = round(random.uniform(100000, 1500000), 2)
     
-    # Random randint para id_publicacion (de 1 a 750)
+    # Buscar una publicación válida
     id_publicacion = random.randint(1, 750)
+    while not publicacion_existe(cursor, id_publicacion):
+        id_publicacion = random.randint(1, 750)
     
-    # Random randint para id_usuario (de 1 a 1300)
+    # Buscar un usuario válido
     id_usuario = random.randint(1, 1300)
+    while not usuario_existe(cursor, id_usuario):
+        id_usuario = random.randint(1, 1300)
 
     # Insertar en la base de datos
     cursor.execute("""

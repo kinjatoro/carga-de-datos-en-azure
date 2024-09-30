@@ -56,22 +56,15 @@ CREATE TABLE raw_financiamientos (
     FOREIGN KEY (id_usuario) REFERENCES raw_usuarios(id_usuario)
 );
 
-CREATE TABLE raw_contratos (
-    id_contrato INT PRIMARY KEY,
-    id_publicacion INT, 
-    id_usuario_locador INT,
-    id_usuario_locatario INT,
-    id_usuario_abogado INT, -- Nuevo campo para el abogado
-    fecha_firma DATE,
-    fecha_inicio DATE,
-    fecha_fin DATE,
-    monto_renta DECIMAL(15,2),
-    estado_contrato NVARCHAR(MAX), -- ['activo, 'finalizado', 'rescindido']
-    FOREIGN KEY (id_publicacion) REFERENCES raw_publicaciones(id_publicacion),  
-    FOREIGN KEY (id_usuario_locador) REFERENCES raw_usuarios(id_usuario),
-    FOREIGN KEY (id_usuario_locatario) REFERENCES raw_usuarios(id_usuario),
-    FOREIGN KEY (id_usuario_abogado) REFERENCES raw_usuarios(id_usuario) -- Clave foránea para el abogado
-);
+
+/*
+Asignado: cuando solo firmó una de las partes (locador o locatario), o ninguna de ellas.
+Pendiente: cuando ya firmaron ambas partes, pero aún falta la firma del escribano.
+Activo: cuando locador, locatario y escribano han firmado.
+Finalizado: cuando el contrato ya ha terminado por fecha.
+Rescindido: cuando el contrato se termina antes de su fecha de finalización.
+Rechazado: cuando alguna de las partes o el escribano rechazan el contrato antes de la firma final.
+*/
 
 CREATE TABLE raw_contratos (
     id_contrato INT PRIMARY KEY,
@@ -84,12 +77,10 @@ CREATE TABLE raw_contratos (
     fecha_inicio DATE,
     fecha_fin DATE,
     monto DECIMAL(15,2), -- Puede ser alquiler o monto del guardado de muebles
-    estado_contrato NVARCHAR(MAX), -- ['activo', 'finalizado', 'rescindido', 'rechazado', 'pendiente']
+    estado_contrato NVARCHAR(MAX), -- ['activo', 'finalizado', 'rescindido', 'rechazado', 'pendiente', 'asignado']
     FOREIGN KEY (id_publicacion) REFERENCES raw_publicaciones(id_publicacion),  
-    FOREIGN KEY (id_usuario_locador) REFERENCES raw_usuarios(id_usuario),
+    FOREIGN KEY (id_usuario_locador_o_mudanza) REFERENCES raw_usuarios(id_usuario),
     FOREIGN KEY (id_usuario_locatario) REFERENCES raw_usuarios(id_usuario),
     FOREIGN KEY (id_usuario_escribano) REFERENCES raw_usuarios(id_usuario), -- Clave foránea para el escribano
-    FOREIGN KEY (id_usuario_garante) REFERENCES raw_usuarios(id_usuario), -- Clave foránea para el garante
-    FOREIGN KEY (id_empresa_guardado) REFERENCES raw_empresas(id_empresa) -- Clave foránea para la empresa de guardado
 );
 
