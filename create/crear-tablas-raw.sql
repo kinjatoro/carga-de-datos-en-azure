@@ -17,7 +17,8 @@ CREATE TABLE raw_publicaciones (
     estado NVARCHAR(10), --- Activo o inactivo
     id_usuario INT,
     tipo NVARCHAR(15), --- Casa o departamento
-    superficie_total_m2 INT, --- En metros cuadrados
+    superficie_total_m2 INT, --- En metros cuadrados,
+    ganancia_generada DECIMAL(15,2),
     FOREIGN KEY (id_usuario) REFERENCES raw_usuarios(id_usuario) --- El usuario id es 1, 2, 3... y así.
 );
 
@@ -27,6 +28,7 @@ CREATE TABLE raw_pagos (
     monto DECIMAL(15,2),
     id_publicacion INT, 
     id_usuario INT,
+    estado NVARCHAR(MAX), --- 'Aprobado, pendiente, rechazado'
     FOREIGN KEY (id_publicacion) REFERENCES raw_publicaciones(id_publicacion),
     FOREIGN KEY (id_usuario) REFERENCES raw_usuarios(id_usuario)
 );
