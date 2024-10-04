@@ -86,3 +86,12 @@ CREATE TABLE raw_contratos (
     FOREIGN KEY (id_usuario_escribano) REFERENCES raw_usuarios(id_usuario), -- Clave foránea para el escribano
 );
 
+
+CREATE TABLE raw_reclamos (
+    id_reclamo INT PRIMARY KEY,
+	fecha_reclamo DATE,
+    estado NVARCHAR(50), --  ("Abierto", "En Proceso", "Resuelto", "Cerrado")
+	id_usuario INT,
+	categoria NVARCHAR(50), --  (Categoría específica como "Problemas Técnicos", "Cobros Incorrectos", "Servicio Deficiente", “Otros”, etc.)
+    FOREIGN KEY (id_usuario) REFERENCES raw_usuarios(id_usuario),  
+);
