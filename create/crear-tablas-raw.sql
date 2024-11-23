@@ -49,6 +49,7 @@ CREATE TABLE raw_mudanzas (
     FOREIGN KEY (id_usuario) REFERENCES raw_usuarios(id_usuario)
 );
 
+/*
 CREATE TABLE raw_financiamientos (
     id_financiamiento NVARCHAR(100) PRIMARY KEY,
     fecha_solicitud DATE,
@@ -58,7 +59,7 @@ CREATE TABLE raw_financiamientos (
     id_usuario NVARCHAR(100),
     FOREIGN KEY (id_usuario) REFERENCES raw_usuarios(id_usuario)
 );
-
+*/
 
 /*
 Asignado: cuando solo firmó una de las partes (locador o locatario), o ninguna de ellas.
