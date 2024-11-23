@@ -7,7 +7,7 @@ CREATE TABLE raw_usuarios (
 );
 
 CREATE TABLE raw_publicaciones (
-    id_publicacion INT PRIMARY KEY,
+    id_publicacion NVARCHAR(100) PRIMARY KEY,
     fecha_publicacion DATE,
     precio_publicacion DECIMAL(15,2),
     direccion NVARCHAR(MAX),
@@ -23,7 +23,7 @@ CREATE TABLE raw_publicaciones (
 );
 
 CREATE TABLE raw_pagos (
-    id_pago INT PRIMARY KEY,
+    id_pago NVARCHAR(100) PRIMARY KEY,
     fecha DATE,
     monto DECIMAL(15,2),
     id_usuario NVARCHAR(100),
@@ -35,7 +35,7 @@ CREATE TABLE raw_pagos (
 );
 
 CREATE TABLE raw_mudanzas (
-    id_mudanza INT PRIMARY KEY,
+    id_mudanza NVARCHAR(100) PRIMARY KEY,
     fecha_solicitud DATE,
     fecha_realizacion DATE,
     costo_mudanza DECIMAL(15,2),
@@ -50,7 +50,7 @@ CREATE TABLE raw_mudanzas (
 );
 
 CREATE TABLE raw_financiamientos (
-    id_financiamiento INT PRIMARY KEY,
+    id_financiamiento NVARCHAR(100) PRIMARY KEY,
     fecha_solicitud DATE,
     monto_solicitado DECIMAL(15,2),
     monto_aprobado DECIMAL(15,2),
@@ -70,8 +70,8 @@ Rechazado: cuando alguna de las partes o el escribano rechazan el contrato antes
 */
 
 CREATE TABLE raw_contratos (
-    id_contrato INT PRIMARY KEY,
-    id_publicacion INT, 
+    id_contrato NVARCHAR(100) PRIMARY KEY,
+    id_publicacion NVARCHAR(100), 
     id_usuario_locatario NVARCHAR(100),
     id_usuario_locador_o_mudanza NVARCHAR(100),
     id_usuario_escribano NVARCHAR(100), -- Nuevo campo para el escribano (firma digital)
@@ -89,7 +89,7 @@ CREATE TABLE raw_contratos (
 
 
 CREATE TABLE raw_reclamos (
-    id_reclamo INT PRIMARY KEY,
+    id_reclamo NVARCHAR(MAX) PRIMARY KEY,
     fecha_reclamo DATE,
     estado NVARCHAR(50), --  ("Abierto", "En Proceso", "Resuelto", "Cerrado")
     id_usuario NVARCHAR(100),
