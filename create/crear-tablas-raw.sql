@@ -1,8 +1,9 @@
 CREATE TABLE raw_usuarios (
     id_usuario NVARCHAR(100) PRIMARY KEY,
     nombre NVARCHAR(MAX),
-    tipo_usuario NVARCHAR(MAX), -- Puede ser 'locador', 'locatario', 'empleado', 'mudanza', 'abogado'
+    tipo_usuario NVARCHAR(MAX), -- Puede ser 'locador', 'locatario', 'empleado', 'mudanza', 'abogado', 'ceo'
     fecha_registro DATE,
+    fecha_nacimiento DATE,
 );
 
 CREATE TABLE raw_publicaciones (
@@ -18,7 +19,6 @@ CREATE TABLE raw_publicaciones (
     id_usuario NVARCHAR(100),
     tipo NVARCHAR(15), --- Casa o departamento
     superficie_total_m2 INT, --- En metros cuadrados,
-    ganancia_generada DECIMAL(15,2),
     FOREIGN KEY (id_usuario) REFERENCES raw_usuarios(id_usuario) --- El usuario id es 1, 2, 3... y así.
 );
 
@@ -26,10 +26,11 @@ CREATE TABLE raw_pagos (
     id_pago INT PRIMARY KEY,
     fecha DATE,
     monto DECIMAL(15,2),
-    id_publicacion INT, 
     id_usuario NVARCHAR(100),
     estado NVARCHAR(MAX), --- 'Aprobado, pendiente, rechazado'
-    FOREIGN KEY (id_publicacion) REFERENCES raw_publicaciones(id_publicacion),
+    financiable NVARCHAR(MAX),
+    descuento NVARCHAR(MAX),
+    concepto NVARCHAR(MAX),
     FOREIGN KEY (id_usuario) REFERENCES raw_usuarios(id_usuario)
 );
 
